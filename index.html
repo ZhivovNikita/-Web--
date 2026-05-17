@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title> Тренажёр скорости печати</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>️ Тренажёр скорости печати</h1>
+      <button class="theme-btn" id="theme-toggle">🌙 Тёмная тема</button>
+    </div>
+
+    <div class="card">
+      <h3>👤 Настройки пользователя</h3>
+      <form id="user-form" class="settings-form">
+        <div class="form-group">
+          <label for="user-name">Ваше имя</label>
+          <input type="text" id="user-name" placeholder="Иван" value="Ваше имя">
+        </div>
+        <div class="form-group">
+          <label for="target-wpm">Целевая скорость (слов/мин)</label>
+          <input type="number" id="target-wpm" placeholder="40" min="10" max="200" value="50">
+        </div>
+        <div class="form-group">
+          <button type="submit">💾 Сохранить</button>
+        </div>
+      </form>
+      <p id="user-greeting" style="margin-top:10px; font-size:0.9rem; color:var(--text-sec);">Привет, Студент!</p>
+    </div>
+
+    <div class="card">
+      <div class="stats">
+        <div><h4>Время</h4><div class="val" id="stat-time">0с</div></div>
+        <div><h4>Слов/мин</h4><div class="val" id="stat-wpm">0</div></div>
+        <div><h4>Точность</h4><div class="val" id="stat-acc">100%</div></div>
+        <div><h4>Рекорд</h4><div class="val" id="stat-best">0</div></div>
+      </div>
+    </div>
+
+    <div class="card game-area">
+      <div class="text-display" id="text-display">Нажмите "Старт"...</div>
+      <input type="text" id="typing-input" placeholder="Ожидание..." disabled autocomplete="off">
+      <div class="pause-overlay" id="pause-overlay">
+        <h2> ПАУЗА</h2>
+        <p>Пробел или кнопка для продолжения</p>
+      </div>
+    </div>
+
+    <div class="controls">
+      <select id="difficulty">
+        <option value="easy">Лёгкий</option>
+        <option value="medium" selected>Средний</option>
+        <option value="hard">Сложный</option>
+      </select>
+      <button class="btn btn-sec" id="btn-pause" disabled>⏸ Пауза</button>
+      <button class="btn btn-primary" id="btn-start">▶ Старт</button>
+      <button class="btn btn-danger" id="btn-restart">🔄 Заново</button>
+    </div>
+
+    <div class="card">
+      <h3>📊 История тренировок</h3>
+      <table class="history-table">
+        <thead><tr><th>Дата</th><th>Имя</th><th>Слов/мин</th><th>Точность</th></tr></thead>
+        <tbody id="history-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
