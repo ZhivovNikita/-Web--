@@ -33,6 +33,17 @@ function renderHistory(history) {
   });
 }
 
+function togglePauseOverlay(show) {
+  const overlay = document.getElementById('pause-overlay');
+  if (overlay) {
+    if (show) {
+      overlay.classList.add('active');
+    } else {
+      overlay.classList.remove('active');
+    }
+  }
+}
+
 const userSettings = JSON.parse(localStorage.getItem('tt_user')) || { name: 'Студент', target: 50 };
 document.getElementById('user-name').value = userSettings.name;
 document.getElementById('target-wpm').value = userSettings.target;
