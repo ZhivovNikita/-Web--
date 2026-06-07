@@ -77,3 +77,101 @@ document.getElementById('theme-toggle').addEventListener('click', () => {
   html.setAttribute('data-theme', isDark ? 'dark' : 'light');
   document.getElementById('theme-toggle').textContent = isDark ? '️ Светлая тема' : '🌙 Тёмная тема';
 });
+
+document.getElementById('btn-start').addEventListener('click', startGame);
+document.getElementById('btn-restart').addEventListener('click', startGame);
+document.getElementById('btn-pause').addEventListener('click', togglePause);
+
+const inputEl = document.getElementById('typing-input');
+inputEl.addEventListener('input', handleTyping);
+inputEl.addEventListener('keydown', e => { if (e.code === 'Space') { e.preventDefault(); togglePause(); }});
+inputEl.addEventListener('paste', e => e.preventDefault());
+
+async function startGame() {
+  resetGame();
+  const diff = document.getElementById('difficulty').value;
+  const text = await loadGameText(diff);
+  if (!text) {
+    document.getElementById('text-display').textContent = 'Ошибка загрузки текста';
+    return;
+  }
+    gameState.text = text;
+  renderText(text);
+  inputEl.disabled = false;
+  inputEl.focus();
+  document.getElementById('btn-pause').disabled = false;
+  document.getElementById('btn-start').style.display = 'none';
+}
+
+function handleTyping(e) {
+  if (gameState.paused || gameState.finished) return;
+  const val = e.target.value;
+  if (!gameState.timer) {
+    gameState.timer = setInterval(() => {
+      gameState.elapsed++;
+      document.getElementById('stat-time').textContent = `${gameState.elapsed}с`;
+    }, 1000);
+  }
+
+  let correct = 0;
+  for (let i = 0; i < val.length; i++) {
+    if (val[i] === gameState.text[i]) correct++;
+  }
+  updateCharVisuals(val, gameState.text);
+
+    const metrics = calculateMetrics(val.length, correct);
+  document.getElementById('stat-wpm').textContent = metrics.wpm;
+  document.getElementById('stat-acc').textContent = `${metrics.acc}%`;
+
+  if (val.length >= gameState.text.length) finishGame(metrics);
+}
+
+function togglePause() {
+  if (gameState.finished || !gameState.text) return;
+  gameState.paused = !gameState.paused;
+  if (gameState.paused) {
+    clearInterval(gameState.timer);
+    togglePauseOverlay(true);
+    document.getElementById('btn-pause').textContent = '▶ Продолжить';
+  } else {
+    gameState.timer = setInterval(() => {
+      gameState.elapsed++;
+      document.getElementById('stat-time').textContent = `${gameState.elapsed}с`;
+    }, 1000);
+    togglePauseOverlay(false);
+    document.getElementById('btn-pause').textContent = '⏸ Пауза';
+    inputEl.focus();
+  }
+}
+
+function finishGame(metrics) {
+  gameState.finished = true;
+  clearInterval(gameState.timer);
+  inputEl.disabled = true;
+  document.getElementById('btn-pause').disabled = true;
+  document.getElementById('btn-pause').textContent = '⏸ Пауза';
+  document.getElementById('btn-start').style.display = 'block';
+
+  const result = { date: new Date().toLocaleDateString(), name: userSettings.name, wpm: metrics.wpm, acc: metrics.acc };
+  history.unshift(result);
+  if (history.length > 10) history.pop();
+  localStorage.setItem('tt_history', JSON.stringify(history));
+
+  renderHistory(history);
+  updateBestWPM();
+  document.getElementById('text-display').innerHTML += `<div style="margin-top:10px;color:var(--success);font-weight:bold;">✅ Тест завершён!</div>`;
+}
+
+function resetGame() {
+  clearInterval(gameState.timer);
+  gameState = { text: '', elapsed: 0, timer: null, paused: false, finished: false };
+  inputEl.value = '';
+  document.getElementById('stat-time').textContent = '0с';
+  document.getElementById('stat-wpm').textContent = '0';
+  document.getElementById('stat-acc').textContent = '100%';
+  inputEl.disabled = true;
+  document.getElementById('btn-pause').disabled = true;
+  document.getElementById('btn-start').style.display = 'block';
+  togglePauseOverlay(false);
+  document.getElementById('text-display').textContent = 'Нажмите "Старт"...';
+}
