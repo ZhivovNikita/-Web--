@@ -22,6 +22,17 @@ function updateCharVisuals(typed, original) {
   }
 }
 
+function renderHistory(history) {
+  const historyBody = document.getElementById('history-body');
+  if (!historyBody) return;
+  historyBody.innerHTML = '';
+  history.forEach(h => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${h.date}</td><td>${h.name}</td><td>${h.wpm}</td><td>${h.acc}%</td>`;
+    historyBody.appendChild(tr);
+  });
+}
+
 const userSettings = JSON.parse(localStorage.getItem('tt_user')) || { name: 'Студент', target: 50 };
 document.getElementById('user-name').value = userSettings.name;
 document.getElementById('target-wpm').value = userSettings.target;
@@ -55,7 +66,6 @@ const textsDB = [
 ];
 
 async function loadGameText(difficulty) {
-  // Имитация асинхронного запроса (требование по заданию)
   await new Promise(res => setTimeout(res, 200));
   const filtered = textsDB.filter(t => t.level === difficulty || difficulty === 'medium');
   return filtered.length ? filtered[Math.floor(Math.random() * filtered.length)].content : null;
@@ -70,6 +80,7 @@ function updateBestWPM() {
 }
 renderHistory(history);
 updateBestWPM();
+
 
 document.getElementById('theme-toggle').addEventListener('click', () => {
   const html = document.documentElement;
