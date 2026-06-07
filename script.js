@@ -106,7 +106,7 @@ document.getElementById('btn-pause').addEventListener('click', togglePause);
 
 const inputEl = document.getElementById('typing-input');
 inputEl.addEventListener('input', handleTyping);
-inputEl.addEventListener('keydown', e => { if (e.code === 'Space') { e.preventDefault(); togglePause(); }});
+inputEl.addEventListener('keydown', e => { if (e.code === 'Escape') { e.preventDefault(); togglePause(); }});
 inputEl.addEventListener('paste', e => e.preventDefault());
 
 async function startGame() {
